@@ -1,0 +1,88 @@
+
+#******************** Settings ************************
+
+*** Settings ***
+
+# TODO: Write Dcocumentation e.g. Project Test scenario. CRUD Operation: Create, Read, Update, Delete
+# TODO: Write Precondition, Postcondition, Tags
+
+Documentation     GitLab Project Page Test Scenario - CRUD Operations: Create, Read, Update, Delete Projects
+Pre Condition     User must be logged in and navigate to the project creation page
+Post Condition    Project created, updated, or deleted successfully depending on the test
+Tags              Project, TS-04-ProjectPage
+
+#******************* Common Variables ********************
+
+*** Variables ***
+
+# NOTE: Please Remove your login credential before uploading Assignments
+
+# TODO: Write Project creation field variables
+
+
+BlankProjectUrl             https://gitlab.com/projects/new#blank_project
+TemplateProjectUrl          https://gitlab.com/projects/new#create_from_template
+Valid_Project_Name          cch2113-project
+Duplicate_Project_Name      cch2113-project
+Updated_Project_Name        cch2113-newproject
+Project_Description         This is a sample project
+Visibility_Level            Private
+
+
+
+
+#******************** Test Cases *************************
+
+*** Test Case ***
+
+# TODO: Write Positive and Negative Test Cases and Test Process steps
+
+# Positive Test examples are below write test process steps for each below test case
+
+Create Blank Project
+    [Documentation]    Create a new blank project using a valid and unique name
+    Navigate To        ${BlankProjectUrl}
+    Input project name       ${Valid_Project_Name}
+	Select Visibility Level      ${Visibility_Level}
+    Click               Initialize repository with a README
+    Submit create project form
+    Verify page should contain  ${Valid_Project_Name} was successfully created.
+
+Create Template Project
+    [Documentation]    Create a project using a built-in template
+    Navigate To        ${TemplateProjectUrl}
+	Select Template    NodeJS
+    Input project name       cch2113-Template
+	Select Visibility Level      ${Visibility_Level}
+    Submit create project form
+    Verify page should contain  The project was successfully created.
+
+Update Name Of Template Project
+    [Documentation]    Rename an existing template-based project
+    Navigate To Project Settings    cch2113-Template
+	Choose                          General
+    Update Project Name             ${Updated_Project_Name}
+    Save Changes
+    Verify Page Should Contain      Project ${Updated_Project_Name} was successfully updated
+
+Delete Template Project
+    [Documentation]    Delete a previously created template project
+    Navigate To Project Settings    ${Updated_Project_Name}
+	Choose    General
+	Expand  Advanced
+    Click button   Delete project
+    Confirm deletion
+	Click button   Yes, delete project
+    Verify page should contain   This project is pending deletion, and will be deleted on 2025-05-10. Repository and other project resources are read-only.
+
+# Negative Test examples are below write test process steps for each below test case
+
+	Create a blank project with the previous same name
+
+
+Create Blank Project With Duplicate Name
+    [Documentation]    Attempt to create a new project using a name that already exists
+    Navigate to        ${BlankProjectUrl}
+    Input project name       ${Duplicate_Project_Name}
+    Submit create project form
+    Verify error message should be visible    Project name has already been taken

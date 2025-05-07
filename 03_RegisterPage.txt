@@ -1,0 +1,114 @@
+
+#******************** Settings ************************
+
+*** Settings ***
+
+# TODO: Write Documentation e.g. User Registration Test scenario with verification, valid and invalid credentials.
+# TODO: Write Precondition, Postcondition, Tags
+
+Documentation     User registration test scenario with verification using valid and invalid credentials. This tests GitLab's sign-up page behavior for both successful and unsuccessful registration attempts.
+Pre Condition      Open browser and navigate to GitLab registration page
+Post Condition     Close browser after test execution
+Tags               Registration, TS-03-RegisterPage
+
+#******************* Common Variables ********************
+
+*** Variables ***
+
+# NOTE: Please Remove your login credential before uploading Assignments
+
+# TODO: Write Registration field variables
+
+LoginUrl                 https://gitlab.com/users/sign_up
+Valid_First_Name         Chien Chuan
+Valid_Last_Name          Huang
+Valid_Username           cch2113
+Valid_Email              cchuang2113@gmail.com
+Another_Email            kimi.huang00@gmail.com
+Valid_Password           ****************
+Duplicate_Username       cch2113
+Invalid_Email            testgmail.com
+Empty                    ${EMPTY}
+
+
+
+#******************** Test Cases *************************
+
+*** Test Case ***
+
+# TODO: Write Positive and Negative Test Cases and Test Process steps (Think about possible test cases)
+
+# Positive Test examples are below write test process steps for each below test case
+
+Register User With Valid Username And Password
+    [Documentation]    Verify that a user can register successfully with valid credentials
+    Navigate to login page    ${LoginUrl}
+	Input first name          ${Valid_First_Name}
+	Input last name           ${Valid_Last_Name}
+    Input username            ${Valid_Username}
+    Input email               ${Valid_Email}
+    Input password            ${Valid_Password}
+    Solve recaptcha
+    Submit registration form
+    Verify page should contain    Welcome to GitLab,  ${Valid_First_Name}!
+
+# Negative Test examples keywords are below write test process steps for each below test case 
+
+Register with same username
+    [Documentation]    Try registering again with a username that already exists
+    Navigate to login page    ${LoginUrl}
+	Input first name          test
+	Input last name           test
+    Input Username            ${Duplicate_Username}
+	A red error message display  Username is already taken                     
+	Input another email       ${Another_Email}        
+    Input Password            ${Valid_Password}
+    Solve Recaptcha
+    Submit Registration Form
+    Verify Page Should Contain    Username has already been taken
+   
+
+Register with empty password
+    [Documentation]    Attempt to register with an empty password field
+    Navigate to login page    ${LoginUrl}
+	Input first name          test
+	Input last name           test
+    Input username            alltestistaken
+    Input email               test@gmail.com
+    Input password            ${Empty}
+    Verify “Continue” button should be disabled           
+
+Register with invalid email
+    [Documentation]    Attempt to register using an invalid email format
+    Navigate To Login Page    ${LoginUrl}
+	Input first name          test
+	Input last name           test
+    Input username            alltestistaken
+    Input Email               ${Invalid_Email}
+	A error message should be Visible    Please provide a valid email address.
+    Input Password             ${Valid_Password}
+    Verify "Continue" button should be disabled  
+
+Register without verifing email address
+    [Documentation]    Submit the registration form without verifing email address
+    Navigate To Login Page    ${LoginUrl}
+	Input first name          test
+	Input last name           test
+    Input Username            alltestistaken
+    Input Email               ${Another_Email}
+    Input Password            ${Valid_Password}
+	Submit registration form
+	Verify Page Should Contain       Help us keep GitLab secure...Step 1: Verify email address
+    Click button                     Verify My Email
+    Verify Error Message Should Be Visible    Enter a code
+
+Register with missing email field
+    [Documentation]    Attempt to register with a missing email while other fields are valid
+    Navigate To Login Page    ${LoginUrl}
+	Input first name          test
+	Input last name           test
+    Input username            alltestistaken
+    Input email               ${Empty}
+    Input password            ${Valid_Password}
+	A error message should display  Please provide a valid email address.   
+

@@ -1,0 +1,70 @@
+
+#******************** Settings ************************
+
+*** Settings ***
+Documentation	Issue Test scenario. CRUD Operation: Create, Read, Update, Delete
+
+# TODO: Write Precondition and Postcondition, Tags 
+
+
+Pre Condition      A project must already be created and accessible
+Post Condition     Issue created, renamed, or deleted successfully depending on the test
+Tags               Issue, TS-05-IssuePage
+
+#******************* Common Variables ********************
+
+
+*** Variables ***
+
+# NOTE: Please Remove your login credential before uploading Assignments
+
+# TODO: Write Issue creation field variables, Updated name of the issue
+
+BaseProjectUrl                https://gitlab.com/cch2113-group/cch2113-blank 
+NewIssueUrl                   ${BaseProjectUrl}/-/issues/new
+Issue_Title_1                 This is a testing issue.
+Issue_Description             This is the first issue created for testing
+Updated_Issue_Title           Updated Issue Title
+Issue_Title_2_Duplicate       Updated Issue Title  # purposely same as updated name to trigger error
+
+
+
+#******************** Test Cases *************************
+
+*** Test Case ***
+
+# TODO: Write Positive Test Cases and Test Process steps
+
+Create First Issue
+    [Documentation]    Create a new issue with a unique title
+    Navigate To        ${NewIssueUrl}
+    Input issue title        ${Issue_Title_1}
+    Input issue description  ${Issue_Description}
+    Click button    Create issue
+    Verify page should contain   ${Issue_Title_1}
+
+Update Issue Title
+    [Documentation]    Edit the title of an existing issue
+    Navigate to issue details    ${Issue_Title_1}
+    Click button Edit 
+    Update issue title           ${Updated_Issue_Title}
+    Save changes
+    Verify page should contain   ${Updated_Issue_Title}
+
+Create Second Issue With Duplicate Title
+    [Documentation]    Attempt to create a new issue using a title that was already used (after renaming previous)
+    Navigate to        ${NewIssueUrl}
+    Input issue title        ${Issue_Title_2_Duplicate}
+    Input issue description  This is a duplicate issue title
+    Click button Create issue
+    Verify error message should be visible    Title has already been taken
+
+Delete First Issue
+    [Documentation]    Delete the updated issue
+    Navigate to issue details    ${Updated_Issue_Title}
+    Click the three dots in the upper right corner
+    Click Delete Issue
+    Confirm Deletion
+    Verify page should contain    The issue was successfully deleted
+
+
